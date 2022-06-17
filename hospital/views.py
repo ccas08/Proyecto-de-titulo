@@ -389,7 +389,8 @@ def informe_patient_view(request):
 
             return render(request, "hospital/patient_dashboard.html", context= mydict)
         else:
-            report = {"patient": patient, "reports": models.PatientReport(), "patient_id": patient.user_id}
+            patientReport = models.PatientReport.objects.all().order_by("reportGenerado").reverse()
+            report = {"patient": patient, "reports": patientReport, "patient_id": patient.user_id}
             mydict.update(report)
             return render(request, "hospital/patient_view_report.html", context= mydict)
         
