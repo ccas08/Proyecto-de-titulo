@@ -2,6 +2,7 @@
 
 1. Descargar o clonar repositorio
 2. Ejecutar los siguientes comandos
+<pre>
 <code> 
 pip install django==3.0.5 <br/>
 pip install django-widget-tweaks <br/>
@@ -13,6 +14,7 @@ python manage.py makemigrations <br/>
 python manage.py migrate <br/>
 python manage.py runserver <br/>
 </code>
+</pre>
 
 ## Cosas a considerar
 
