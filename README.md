@@ -3,15 +3,15 @@
 1. Descargar o clonar repositorio
 2. Ejecutar los siguientes comandos
 <code> 
-pip install django==3.0.5 <br>
-pip install django-widget-tweaks <br>
+pip install django==3.0.5 <br/>
+pip install django-widget-tweaks <br/>
 pip install xhtml2pdf<br>
 </code>
 3. para encender el proyecto antes se debe hacer estos pasos
 <code>
-python manage.py makemigrations <br>
-python manage.py migrate <br>
-python manage.py runserver <br>
+python manage.py makemigrations <br/>
+python manage.py migrate <br/>
+python manage.py runserver <br/>
 </code>
 
 ## Cosas a considerar
@@ -32,7 +32,7 @@ python manage.py runserver <br>
 
 - Se iba a trabajar con Api pero nunca se encontró una manera de poder obtener un token, por lo cual se decidió llegar a tener que usar libreview, pero se sacan los datos mediante automatización.
 
--Si alguna imagen falla, apagar y enceder denuevo el proyecto( runserver) y si el problema persiste, cambiar la imagen de la ruta
+- Si alguna imagen falla, apagar y enceder denuevo el proyecto( runserver) y si el problema persiste, cambiar la imagen de la ruta
 
 
 
