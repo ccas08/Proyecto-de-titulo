@@ -3,15 +3,15 @@
 1. Descargar o clonar repositorio
 2. Ejecutar los siguientes comandos
 <code> 
-pip install django==3.0.5
-pip install django-widget-tweaks
-pip install xhtml2pdf
+pip install django==3.0.5 <br>
+pip install django-widget-tweaks <br>
+pip install xhtml2pdf<br>
 </code>
 3. para encender el proyecto antes se debe hacer estos pasos
 <code>
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
+python manage.py makemigrations <br>
+python manage.py migrate <br>
+python manage.py runserver <br>
 </code>
 
 ## Cosas a considerar
