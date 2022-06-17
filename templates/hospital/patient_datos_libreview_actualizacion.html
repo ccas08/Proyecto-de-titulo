@@ -1,7 +1,6 @@
-{% extends 'hospital/admin_base.html' %}
-{% load static %}
+{% extends 'hospital/patient_base.html' %}
 {% block content %}
-
+{%load static%}
 <head>
   <meta charset="utf-8">
   <title>A simple, clean, and responsive HTML invoice template</title>
@@ -102,11 +101,6 @@
     .menu {
       top: 50px;
     }
-
-    .download {
-      text-align: center;
-      display: block;
-    }
   </style>
 </head>
 
@@ -118,33 +112,31 @@
         <table>
           <tr>
             <td class="title">
-              <h1>Hospital Management</h1>
+              <h1>Datos para actualizar maquina Libreview</h1>
             </td>
 
-            <td>
-
-              Admit Date: {{admitDate}}<br>
-              Release Date: {{todayDate}}<br>
-              Days Spent: {{day}}
-            </td>
+            
           </tr>
         </table>
       </td>
     </tr>
 
     <tr class="information">
+      
       <td colspan="2">
+
         <table>
+          
           <tr>
             <td>
-              Patient Name : {{name}}<br>
-              Patient Mobile : {{mobile}}<br>
-              Patient Addres : {{address}}<br>
+              Nombre : {{request.user.first_name}}<br>
+              Apellido : {{request.user.last_name}}<br>
+              Rut: {{request.user.username}}<br>
             </td>
 
             <td>
-              Doctor Name :<br>
-              {{assignedDoctorName}}<br>
+              Nombre del doctor :<br>
+              {{doctorName}}<br>
 
             </td>
           </tr>
@@ -154,7 +146,7 @@
 
     <tr class="heading">
       <td>
-        Disease and Symptoms
+        Tipo de diabetes
       </td>
       <td>
 
@@ -164,72 +156,57 @@
 
     <tr class="details">
       <td>
-        {{symptoms}}
+        {{Type}}
       </td>
     </tr>
     <tr class="heading">
       <td>
-        Item
+        datos para iniciar
       </td>
 
       <td>
-        Price
+        
       </td>
     </tr>
 
-    <tr class="item">
-      <td>
-        Room Charge of {{day}} Days
-      </td>
 
-      <td>
-        {{roomCharge}}
-      </td>
-    </tr>
+    
 
-    <tr class="item">
-      <td>
-        Doctor Fee
-      </td>
+    <form method="post">
+      {% csrf_token %}
 
-      <td>
-        {{doctorFee}}
-      </td>
-    </tr>
+      
 
-    <tr class="item">
-      <td>
-        Medicine Cost
-      </td>
+      <tr class="item">
 
-      <td>
-        {{medicineCost}}
-      </td>
-    </tr>
+        <td>
+          Correo Electrónico
+        </td>
 
-    <tr class="item last">
-      <td>
-        Other Charge
-      </td>
+        <td>
+          <input type="string" name="libreview_email" placeholder="email@email.com" value="">
+        </td>
+      </tr>
 
-      <td>
-        {{OtherCharge}}
-      </td>
-    </tr>
+      <tr class="item">
+        <td>
+          Contraseña
+        </td>
+              
+        <td>
+          <input type="Password" name="libreview_password" placeholder="*******" value="">
+        </td>
+      </tr>
 
-    <tr class="total">
-      <td></td>
+      
 
-      <td>
-        Total Rupees : {{total}}
-      </td>
-    </tr>
+        <td>
+          <input type="submit" name="submit" value="Actualizar máquina LibreView">
+        </td>
+      </tr>
 
+    </form>
   </table>
-</div>
-<br><br>
-<div class="download">
-  <a style="background:red; width:500px;" href="{% url 'download-pdf' patientId  %}">Download</a>
 </div>
 
 {% endblock content %}

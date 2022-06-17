@@ -1,7 +1,6 @@
 {% extends 'hospital/patient_base.html' %}
-{% load static %}
 {% block content %}
-
+{%load static%}
 <head>
   <meta charset="utf-8">
   <title>A simple, clean, and responsive HTML invoice template</title>
@@ -102,17 +101,10 @@
     .menu {
       top: 50px;
     }
-
-    .download {
-      text-align: center;
-      display: block;
-    }
   </style>
 </head>
 
 <br><br><br>
-
-{%if is_discharged%}
 <div class="invoice-box">
   <table cellpadding="0" cellspacing="0">
     <tr class="top">
@@ -120,30 +112,31 @@
         <table>
           <tr>
             <td class="title">
-              <h1>Hospital Management</h1>
+              <h1>Datos para registro LibreView</h1>
             </td>
 
-            <td>
-              Release Date: {{releaseDate}}<br>
-              Days Spent: {{daySpent}}
-            </td>
+            
           </tr>
         </table>
       </td>
     </tr>
 
     <tr class="information">
+      
       <td colspan="2">
+
         <table>
+          
           <tr>
             <td>
-              Patient Name : {{patientName}}<br>
-              Patient Addres : {{Type}}<br>
+              Nombre : {{request.user.first_name}}<br>
+              Apellido : {{request.user.last_name}}<br>
+              Rut: {{request.user.username}}<br>
             </td>
 
             <td>
-              Doctor Name :<br>
-              {{assignedDoctorName}}<br>
+              Nombre del doctor :<br>
+              {{doctorName}}<br>
 
             </td>
           </tr>
@@ -153,7 +146,7 @@
 
     <tr class="heading">
       <td>
-        Disease and Symptoms
+        Tipo de diabetes
       </td>
       <td>
 
@@ -168,76 +161,49 @@
     </tr>
     <tr class="heading">
       <td>
-        Item
+        datos para iniciar
       </td>
 
       <td>
-        Price
+        
       </td>
     </tr>
 
-    <tr class="item">
-      <td>
-        Room Charge of {{daySpent}} Days
-      </td>
 
-      <td>
-        {{roomCharge}}
-      </td>
-    </tr>
+    <p> Para sacar informe, asegúrese de tener actualizada la maquina en LibreView </p>
 
-    <tr class="item">
-      <td>
-        Doctor Fee
-      </td>
+    <form method="post">
+      {% csrf_token %}
 
-      <td>
-        {{doctorFee}}
-      </td>
-    </tr>
+    
+        <td>
+          Correo Electrónico
+        </td>
 
-    <tr class="item">
-      <td>
-        Medicine Cost
-      </td>
+        <td>
+          <input type="string" name="libreview_email" placeholder="email@email.com" value="">
+        </td>
+      </tr>
 
-      <td>
-        {{medicineCost}}
-      </td>
-    </tr>
+      <tr class="item">
+        <td>
+          Contraseña
+        </td>
+              
+        <td>
+          <input type="Password" name="libreview_password" placeholder="*******" value="">
+        </td>
+      </tr>
 
-    <tr class="item last">
-      <td>
-        Other Charge
-      </td>
+      
 
-      <td>
-        {{OtherCharge}}
-      </td>
-    </tr>
+        <td>
+          <input type="submit" name="submit" value="Descargar informe en libreview">
+        </td>
+      </tr>
 
-    <tr class="total">
-      <td></td>
-
-      <td>
-        Total Rupees : {{total}}
-      </td>
-    </tr>
-
+    </form>
   </table>
 </div>
-<br><br>
-<div class="download">
-  <a style="background:red; width:500px;" href="{% url 'download-pdf' patientId  %}">Download</a>
-</div>
 
-
-
-{%else%}
-<h5 style="text-align:center;">You Are Not Discharged By Hospital !</h5>
-<h5 style="text-align:center;">Your Treatment Is Going On !</h5><br><br>
-<h6 style="text-align:center;">When You Will Be Discahrged. You Can Download Invoice.</h6>
-{%endif%}
-
-<br><br><br><br><br><br><br><br>
 {% endblock content %}

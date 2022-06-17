@@ -8,8 +8,6 @@ class Doctor(models.Model):
         upload_to="profile_pic/DoctorProfilePic/", null=True, blank=True
     )
     email = models.CharField(max_length=60)
-    # mobile = models.CharField(max_length=20, null=True)
-    # department= models.CharField(max_length=50,choices=departments,default='Cardiologist')
     status = models.BooleanField(default=False)
 
     @property
@@ -30,11 +28,11 @@ class Patient(models.Model):
         upload_to="profile_pic/PatientProfilePic/", null=True, blank=True
     )
     email = models.CharField(max_length=60)
-    # mobile = models.CharField(max_length=20, null=False)
     Type = models.CharField(max_length=100, null=False)
     assignedDoctorId = models.PositiveIntegerField(null=True)
-    # admitDate = models.DateField(auto_now=True)
     status = models.BooleanField(default=False)
+    libreview_email= models.CharField(max_length=60)
+    libreview_password = models.CharField(max_length=20)
 
     @property
     def get_name(self):
@@ -48,30 +46,12 @@ class Patient(models.Model):
         return self.user.first_name + " (" + self.Type + ")"
 
 
-class Appointment(models.Model):
-    patientId = models.PositiveIntegerField(null=True)
-    doctorId = models.PositiveIntegerField(null=True)
-    patientName = models.CharField(max_length=40, null=True)
-    doctorName = models.CharField(max_length=40, null=True)
-    appointmentDate = models.DateField(auto_now=True)
-    description = models.TextField(max_length=500)
-    status = models.BooleanField(default=False)
-
-
-class PatientDischargeDetails(models.Model):
+class PatientReport(models.Model):
     patientId = models.PositiveIntegerField(null=True)
     patientName = models.CharField(max_length=40)
-    assignedDoctorName = models.CharField(max_length=40)
     email = models.CharField(max_length=60)
-    mobile = models.CharField(max_length=20, null=True)
     Type = models.CharField(max_length=100, null=True)
+    reportGenerado= models.CharField(max_length=20, null=True)
+    Gmi = models.FloatField(null=False)
+    GlucosaPromedio = models.PositiveIntegerField(null=False)
 
-    # admitDate = models.DateField(null=False)
-    releaseDate = models.DateField(null=False)
-    daySpent = models.PositiveIntegerField(null=False)
-
-    roomCharge = models.PositiveIntegerField(null=False)
-    medicineCost = models.PositiveIntegerField(null=False)
-    doctorFee = models.PositiveIntegerField(null=False)
-    OtherCharge = models.PositiveIntegerField(null=False)
-    total = models.PositiveIntegerField(null=False)

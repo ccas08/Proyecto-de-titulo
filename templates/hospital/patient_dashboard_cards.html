@@ -17,6 +17,12 @@
       font-family: 'Carrois Gothic', sans-serif;
     }
 
+    .market-update-block h5 {
+      color: #fff;
+      font-size: 1.0em;
+      font-family: 'Carrois Gothic', sans-serif;
+    }
+
     .market-update-block h4 {
       font-size: 1.2em;
       color: #fff;
@@ -141,12 +147,13 @@
 </head>
 
 <body>
+  {% for p in reports %}
   <div class="market-updates">
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-1">
         <div class="col-md-8 market-update-left">
+          <h4>Nombre del doctor</h4>
           <h3>{{doctorName}}</h3>
-          <h4>Doctor Name</h4>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-user-o"> </i>
@@ -157,8 +164,8 @@
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-2">
         <div class="col-md-8 market-update-left">
-          <h3>{{symptoms}}</h3>
-          <h4>Symptoms</h4>
+          <h4>Tipo de diabetes</h4>
+          <h3>{{Type}}</h3>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-info-circle"></i>
@@ -166,14 +173,15 @@
         <div class="clearfix"> </div>
       </div>
     </div>
+    {% if p.patientId == patient.user_id%}
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-3">
         <div class="col-md-8 market-update-left">
-          <h3>{{doctorMobile}}</h3>
-          <h4>Doctor Mobile</h4>
+          <h4>Indicador de gestión de glucosa (GMI)</h4>
+          <h3>{{p.Gmi}}</h3>
         </div>
         <div class="col-md-4 market-update-right">
-          <i class="fa fa-mobile" aria-hidden="true"></i>
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
         </div>
         <div class="clearfix"> </div>
       </div>
@@ -185,17 +193,18 @@
 
   <br><br><br>
 
+  
 
 
   <div class="market-updates">
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-1">
         <div class="col-md-8 market-update-left">
-          <h3>{{doctorAddress}}</h3>
-          <h4>Doctor Address</h4>
+          <h4>última glucosa promedio</h4>
+          <h3>{{p.GlucosaPromedio}}</h3>
         </div>
         <div class="col-md-4 market-update-right">
-          <i class="fa fa-map-marker"> </i>
+          <i class="fa fa-info-circle"> </i>
         </div>
         <div class="clearfix"> </div>
       </div>
@@ -203,8 +212,8 @@
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-2">
         <div class="col-md-8 market-update-left">
-          <h3>{{doctorDepartment}}</h3>
-          <h4>Doctor Department</h4>
+          <h4>Última fecha de datos</h4>
+          <h3>{{p.reportGenerado}}</h3>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-list-alt"></i>
@@ -212,11 +221,12 @@
         <div class="clearfix"> </div>
       </div>
     </div>
+    
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-3">
         <div class="col-md-8 market-update-left">
-          <h3>{{admitDate}}</h3>
-          <h4>Admit Date</h4>
+          <h4>Correo Electrónico</h4>
+          <h5>{{patient.email}}</h5>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-calendar-o" aria-hidden="true"></i>
@@ -226,9 +236,18 @@
     </div>
     <div class="clearfix"> </div>
   </div>
-
+<br><br><br>
+{% if p.Gmi > 7.0%}
+  <p style="font-size:20px;" > 
+   Tu actual GMI o hemoglobina esta más alta de lo común! <p>
+  {%endif%}
  
-
+  {% if p.GlucosaPromedio > 154%}
+  <p style="font-size:20px;" > 
+   Tu actual promedio de glucosa esta más alto de lo común! <p>
+  {%endif%}
+  {% endif %}
+{% endfor %}
 
 </body>
 

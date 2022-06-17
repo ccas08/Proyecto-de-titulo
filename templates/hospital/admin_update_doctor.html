@@ -53,40 +53,34 @@
   <div class="container register-form">
     <div class="form">
       <div class="note">
-        <p>Update Doctor Details</p>
+        <p>Modificar datos del doctor</p>
       </div>
       <div class="form-content">
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
-              {% render_field userForm.first_name class="form-control" placeholder="First Name" %}
+              {% render_field userForm.first_name class="form-control" placeholder="Nombre" %}
             </div>
             <div class="form-group">
-              {% render_field userForm.username class="form-control" placeholder="Username" %}
+              {% render_field userForm.username class="form-control" placeholder="Rut" %}
             </div>
             <div class="form-group">
-              {% render_field doctorForm.mobile class="form-control" placeholder="Mobile" %}
-            </div>
-            <div class="form-group">
-              {% render_field doctorForm.department class="form-control" placeholder="Department" %}
+              {% render_field doctorForm.email class="form-control" placeholder="Correo electrónico" %}
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
-              {% render_field userForm.last_name class="form-control" placeholder="Last Name" %}
+              {% render_field userForm.last_name class="form-control" placeholder="Apellido" %}
             </div>
             <div class="form-group">
-              {% render_field userForm.password class="form-control" placeholder="Password" %}
-            </div>
-            <div class="form-group">
-              {% render_field doctorForm.address class="form-control" placeholder="Address" %}
+              {% render_field userForm.password class="form-control" placeholder="Contraseña" %}
             </div>
             <div class="form-group">
               {% render_field doctorForm.profile_pic class="form-control" placeholder="Profile Picture" %}
             </div>
           </div>
         </div>
-        <button type="submit" class="btnSubmit">Update</button>
+        <button type="submit" class="btnSubmit">Modificar</button>
       </div>
     </div>
   </div>
