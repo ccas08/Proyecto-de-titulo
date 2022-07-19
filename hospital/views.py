@@ -1,24 +1,25 @@
 from queue import Empty
-from tkinter import Button
 from django.shortcuts import render, redirect, reverse
 from numpy import empty
 from pymysql import NULL
+import os
+import shutil
 from . import forms, models
-from django.db.models import Sum
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
-from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required, user_passes_test
-from datetime import datetime, timedelta, date
-from django.conf import settings
 from django.db.models import Q
-from hospital.tests import  AppRunInforme, AppRunActualizacion
+from hospital.tests import  AppRunInforme, AppRunActualizacion, graficoGlucosaPromedio
+
+import matplotlib.pyplot as plt
+
+from datetime import datetime
 
 # Create your views here.
 def home_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect("afterlogin")
-    #AppRun()
+        
     return render(request, "hospital/index.html")
 
 
@@ -98,7 +99,7 @@ def patient_signup_view(request):
     return render(request, "hospital/patientsignup.html", context=mydict)
 
 
-# -----------for checking user is doctor , patient or admin(by sumit)
+
 def is_admin(user):
     return user.groups.filter(name="ADMIN").exists()
 
@@ -111,7 +112,7 @@ def is_patient(user):
     return user.groups.filter(name="PATIENT").exists()
 
 
-# ---------AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,DOCTOR OR PATIENT
+# ---------ser verifica si es paciente admin o doc
 def afterlogin_view(request):
     if is_admin(request.user):
         return redirect("admin-dashboard")
@@ -182,6 +183,88 @@ def delete_doctor_from_hospital_view(request, pk):
     user.delete()
     doctor.delete()
     return redirect("admin-view-doctor")
+
+@login_required(login_url="patientlogin")
+@user_passes_test(is_patient)
+def delete_report_view(request, pk):
+    report = models.PatientReport.objects.get(id=pk)
+    report.delete()
+    return redirect("patient-view-report")
+
+@login_required(login_url="patientlogin")
+@user_passes_test(is_patient)
+def descargar_ultimo_reporte_view(request):
+    patient = models.Patient.objects.get(
+        user_id=request.user.id
+    ) 
+    my_dict= {"patient": patient, "boolean":False}
+    now= datetime.now().strftime("%Y-%m-%d")
+    route=f"report-glucose-libreview_{now}.pdf"
+    antigua_ruta= "D:\\the_rial_proyecto\\hospitalmanagement-master\\hospital\libreview-pdf-word\\"+ route
+    if(os.path.exists(antigua_ruta)== False ):
+        return render(request, "hospital\patient_informe_descargar.html", context= my_dict)
+    nueva_ruta= "D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\pdfs\\" + route
+    if(os.path.exists("D:/the_rial_proyecto/hospitalmanagement-master/static/pdfs/" + route) ):
+        os.remove("D:/the_rial_proyecto/hospitalmanagement-master/static/pdfs/" + route)
+        shutil.copy(antigua_ruta, nueva_ruta)
+    else:
+        shutil.copy(antigua_ruta, nueva_ruta)
+
+    patientReport = models.PatientReport.objects.all().order_by("reportGenerado").reverse()
+    
+    for r in patientReport :
+        if(patient.user_id == r.patientId):
+            boolean= True
+            my_dict= {"patient": patient, "boolean":boolean, "route": "/pdfs/"+route}
+            
+    return render(request, "hospital\patient_informe_descargar.html", context= my_dict)
+    
+
+
+
+@login_required(login_url="patientlogin")
+@user_passes_test(is_patient)
+def graficos_view(request):
+    patient = models.Patient.objects.get(
+        user_id=request.user.id
+    ) 
+    patientReport = models.PatientReport.objects.all().order_by("reportGenerado").reverse()
+    lista_gmi=[]
+    lista_promedio_glucosa=[]
+    lista_generado=[]
+    boolean=False
+    mydict={"bool":boolean,"patient":patient}
+    for r in patientReport :
+        if(patient.user_id == r.patientId):
+            lista_gmi.append(r.Gmi)
+            lista_generado.append(r.reportGenerado)
+            lista_promedio_glucosa.append(r.GlucosaPromedio)
+            boolean=True
+    if(boolean):
+        fig, ax = plt.subplots()
+        route2=f"barraGlucosaPromedio.png"
+
+        plt.bar( lista_generado,lista_gmi, color="orange")
+        ax.set_ylabel('Gmi')
+        ax.set_title('Indicador gestión de glucosa')
+
+        route=f"barraGmi.png"
+        if(os.path.exists("D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\" + route)):
+            print("pasando")
+            os.remove("D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\"+ route)
+            plt.savefig('D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\'+ route)
+        else:
+            plt.savefig('D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\'+ route)
+
+        graficoGlucosaPromedio(lista_generado,lista_promedio_glucosa)
+
+        route_gmi = "/images/" + route
+        route_glucosaPromedio = "/images/"+ route2
+        mydict={"gmi":route_gmi, "glucosaPromedio":route_glucosaPromedio,"bool":boolean, "patient":patient}
+
+        return render(request, "hospital/patient_graficos_view.html", context=mydict)
+    return render(request, "hospital/patient_graficos_view.html", context=mydict)
+
 
 
 @login_required(login_url="adminlogin")
@@ -364,7 +447,8 @@ def reject_patient_view(request, pk):
     patient.delete()
     return redirect("admin-approve-patient")
 
-
+@login_required(login_url="patientlogin")
+@user_passes_test(is_patient)
 def informe_patient_view(request):
    
     patient = models.Patient.objects.get(
@@ -379,23 +463,36 @@ def informe_patient_view(request):
         }
         mydict.update(postDict)
         
-        pT = models.Patient()
-        pT.libreview_email = request.POST["libreview_email"]
-        pT.libreview_password = request.POST["libreview_password"]
-        p=AppRunInforme(mydict, patient, doctor)
-        if(p != empty):
-            report = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type,"Gmi": p.Gmi, "glucosaPromedio": p.GlucosaPromedio , "fechaGenerada" : p.reportGenerado, "email": patient.email}
-            mydict.update(report)
-
+        
+        patient.libreview_email = request.POST["libreview_email"]
+        patient.libreview_password = request.POST["libreview_password"]
+        
+        patient.save()
+        p = AppRunInforme(patient, doctor)
+        if(p!= empty):
+            mydict2 = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type, "p": p}  
+            mydict.update(mydict2)
             return render(request, "hospital/patient_dashboard.html", context= mydict)
         else:
-            patientReport = models.PatientReport.objects.all().order_by("reportGenerado").reverse()
-            report = {"patient": patient, "reports": patientReport, "patient_id": patient.user_id}
-            mydict.update(report)
             return render(request, "hospital/patient_view_report.html", context= mydict)
         
-    return render(request, "hospital/patient_datos_libreview_informe.html", context=mydict)
+        
+    return render(request, "hospital/patient_datos_libreview_informe.html", context= mydict)
 
+def informe_patient_final_view(request):
+    
+    patient = models.Patient.objects.get(
+        user_id=request.user.id
+    ) 
+    doctor = models.Doctor.objects.get(user_id=patient.assignedDoctorId)
+    mydict = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type}
+    
+
+    
+    
+
+@login_required(login_url="patientlogin")
+@user_passes_test(is_patient)   
 
 def actualizacion_patient_view(request):
     """patients = models.Patient.objects.all().filter(status=True)
@@ -508,6 +605,8 @@ def search_view(request):
 @login_required(login_url="patientlogin")
 @user_passes_test(is_patient)
 def patient_dashboard_view(request):
+
+    
     patient = models.Patient.objects.get(user_id=request.user.id)
     doctor = models.Doctor.objects.get(user_id=patient.assignedDoctorId)
     patientReport = models.PatientReport.objects.all().order_by("reportGenerado").reverse()
@@ -515,8 +614,11 @@ def patient_dashboard_view(request):
        mydict = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type}
        print("aqui")
     else:
-        mydict = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type, "reports": patientReport}      
-        return render(request, "hospital/patient_dashboard.html", context=mydict)
+        mydict = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type}
+        now = datetime.now().strftime("%d/%m/%Y")
+        for p in patientReport:
+            mydict = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type, "p": p}      
+            return render(request, "hospital/patient_dashboard.html", context=mydict)
 
     return render(request, "hospital/patient_dashboard.html", context=mydict)
 

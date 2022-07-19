@@ -4,8 +4,9 @@
 <head>
   <meta charset="utf-8">
   <title></title>
-
+  
   <style media="screen">
+    
     .market-update-block {
       padding: 2em 2em;
       background: #999;
@@ -191,10 +192,11 @@
     
   <br><br><br>
   
-  {% for p in reports %}
+ 
+
     {% if p.patientId == patient.user_id%}
-  <div class="market-updates">
-    <div class="col-md-4 market-update-gd">
+      <div class="market-updates">
+      <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-1">
         <div class="col-md-8 market-update-left">
           <h4>Indicador de gestión de glucosa (GMI)</h4>
@@ -247,9 +249,8 @@
    Tu actual promedio de glucosa esta más alto de lo común! <p>
   {%endif%}
   {% endif %}
-{% endfor %}
 
-
+  
 </body>
 
 </html>

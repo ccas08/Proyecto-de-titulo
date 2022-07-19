@@ -16,6 +16,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
+HOSPITAL_DIR = os.path.join(BASE_DIR, "hospital")
 
 
 # Quick-start development settings - unsuitable for production
@@ -125,11 +126,16 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+HOSPITAL_URL = "/hospital/"
+
 STATICFILES_DIRS = [
     STATIC_DIR,
+    HOSPITAL_DIR
 ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "static")
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "hospital")
 
 
 LOGIN_REDIRECT_URL = "/afterlogin"

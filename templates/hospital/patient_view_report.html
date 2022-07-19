@@ -51,6 +51,7 @@
             <td>{{r.Gmi}}</td>
             <td>{{r.GlucosaPromedio}}</td>
             <td>{{r.reportGenerado}}</td>
+            <td><a class="btn btn-danger btn-xs" href="{% url 'delete-report' r.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
             </tr>
           {% endif %}
         {% endfor %}

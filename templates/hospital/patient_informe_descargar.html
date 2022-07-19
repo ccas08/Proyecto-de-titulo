@@ -1,0 +1,37 @@
+{% extends 'hospital/patient_base.html' %}
+{% block content %}
+{%load static%}
+
+<head>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+
+    }
+
+    h4{
+      text-align: center;
+      background-color: #C4EAE0 ;
+    }
+
+  </style>
+</head>
+
+{%if boolean == True %}
+<h4>Último informe descargado</h4>
+<embed src="{%static route%}" width="1200" height="600" align-text:"center">
+{%else%}
+<p> No hay informes para descargar! </p>
+
+{%endif%}
+
+{% endblock content %}
+

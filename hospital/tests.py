@@ -6,14 +6,23 @@ import time
 from datetime import datetime
 import os
 import shutil
-import PyPDF2 
-import docx
+
+import aspose.words as aw
+
+
+import matplotlib.pyplot as plt2
 import re
 from os import remove
+from django.shortcuts import render
+
+
+
 
 from numpy import empty
 from . import models
-import requests
+
+
+from tika import parser
 
 win = Windows()
 desktop = Desktop()
@@ -25,56 +34,64 @@ ruta_pdf_word = "https://www.investintech.com/es/productos/a2dpro/"
 
 def PdfText (route, patient, doctor):
     try:
-     
-        texto = []
-        document = docx.Document(route)
+    
         contador= 0
         cont=0
         contador_final= 0
-        for parrafo in document.paragraphs:
-        # Aquí eliminas los caracteres que no quieres en el párrafo
-            p = re.sub(r'[.,:;]', '', parrafo.text)
-        # Aquí divides el párrafo en palabras y lo añades a la lista
-            texto.extend(p.split())
-       
+        aux=""
+        
+        raw = parser.from_file(route)
+        
+        string = str(raw["content"])
+        lista= string.split(" ")
+        
         """Ciclo para encontrar GMI""" 
 
-        for text in texto:
+        for text in lista:
+            
             if(text== "GMI"):
                 break
             contador+=1
-        aux= texto[contador+1].split("%")
-        
-        Gmi = int(aux[0])
        
-        Gmi = Gmi / 10
+        aux= lista[contador+1].split("%")
+        aux2= str(aux[0])
+        nueva = aux2.replace(",",".")
+        print(nueva)
+
+        
+        Gmi = float(nueva)
     
+        print("aqui")
         """Ciclo para encontrar Glucosa promedio"""
-        for t in texto:
-            if(t == "Glucosa") and (texto[cont+1]=="promedio"):
-                print(t, " ",texto[cont+1]," ", texto[cont+2])
+        for t in lista:
+            if(t.find("Glucosa")!= -1 ) and (lista[cont+1]=="promedio"):
+                print(t, " ",lista[cont+1]," ", lista[cont+2])
                 break
             cont+=1
-        glucosaPromedio= int(texto[cont+2])
+        glucosaPromedio= int(lista[cont+2])
     
-
+        print("aqui")
         """Ciclo para encontrar tiempo generado"""
-        for te in texto:
-            if(te == "Generado"):
-                print(te, " ",texto[contador_final+1])
+        for te in lista:
+            if(te.find("Generado")!= -1):
+                print(te, " ",lista[contador_final+1])
                 break
             contador_final+=1
-        tiempoGenerado= texto[contador_final+1]
+        tiempoGenerado= lista[contador_final+1]
+        if (tiempoGenerado.find("Informe")!= -1):
+            tiempoGenerado.replace("Informe","")
 
         """Se crea el informe en base a la documentación sacada"""
 
        
 
-        
+        print("aqui")
         orderReport = models.PatientReport.objects.all().order_by("reportGenerado").reverse()
         #print(orderReport[0].reportGenerado, " ", models.PatientReport.objects.all())
         if(orderReport.exists()):
+            print("aqui")
             if(tiempoGenerado != orderReport[0].reportGenerado):
+                print("aqui")
                 newPatientReport= models.PatientReport.objects.create(
                 patientId= patient.user_id,
                 patientName = patient.user.first_name,
@@ -101,13 +118,14 @@ def PdfText (route, patient, doctor):
             return newPatientReport
     
 
-        
-        
-
     except Exception as e:
             print(e)
             print(str(e)) 
 
+
+def Request(request):
+    return render(request, "hospital/loading.html")
+    
 
 
 
@@ -124,12 +142,25 @@ def isValid(path):
                 print(str(e))
 
         
+def graficoGlucosaPromedio(lista_generado,lista_promedio_glucosa):
+    fig2, ax2 = plt2.subplots()
+    ax2.set_ylabel('Glucosa promedio')
+    
+    ax2.set_title('Indicador del promedio glucosa')
+    plt2.bar( lista_generado,lista_promedio_glucosa, color="red")
+    route2=f"barraGlucosaPromedio.png"
+
+    if(os.path.exists("D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\" + route2)):
+        os.remove("D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\" + route2)
+        plt2.savefig('D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\'+ route2)
+    else:
+        plt2.savefig('D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\'+ route2)
 
 def Change_route(namePath, patient, doctor):
     try:
         time.sleep(4)
         if(os.path.exists("D:/the_rial_proyecto/hospitalmanagement-master/hospital/libreview-pdf-word/" + namePath) ):
-            remove("C:/Users/carol/Downloads/" + namePath)
+            return empty
         else:
             shutil.move(
                 "C:/Users/carol/Downloads/" + namePath,
@@ -152,47 +183,25 @@ def Change_route(namePath, patient, doctor):
         #os.rename(path_str.format(line), path2.format("OK{}".format(line)))
 
 def pdfToWord(patient, doctor):
-    desktop.open_application(pathOpera)
-    time.sleep(3)
-    desktop.type_text(ruta_pdf_word)
-    desktop.press_keys("enter")
-    time.sleep(4)
-    isValid("hospital\\images\\down.png")
-    time.sleep(1)
-    isValid("hospital\\images\\down.png")
-    time.sleep(1)
-    isValid("hospital\\images\\down.png")
-    time.sleep(1)
-    isValid("hospital\\images\\down.png")
-    """cambio de nombre para identificarlo"""
-    Initial_path = str("C:\\Users\\carol\\Downloads")
-    now = datetime.now().strftime("%Y-%m-%d")
-    filename = max(
-        [Initial_path + "\\" + f for f in os.listdir(Initial_path)],
-        key=os.path.getctime,
-    )
-    namePath = f"report-glucose-libreview_{now}.pdf"
-
-
-    print("pasando" + namePath + filename)
-
-    shutil.move(filename, os.path.join(Initial_path, namePath))
-    isValid("hospital\\images\\click_word_pdf.png")
-    time.sleep(2)
-    isValid("hospital\\images\\mostrar-archivos.png")
-    time.sleep(2)
-    isValid("hospital\\images\\report-name.png")
-    desktop.press_keys("enter")
-    time.sleep(2)
-    time.sleep(22)
-    isValid("hospital\\images\\descarga-final.png")
-    time.sleep(2)
-    namePath2 = f"report-glucose-libreview_{now}.docx"
-    if(os.path.exists("C:/Users/carol/Downloads/" + namePath) ):
-        remove("C:/Users/carol/Downloads/" + namePath)
-    
-    report = Change_route(namePath2, patient, doctor)
-    return report
+    try:
+        
+        time.sleep(4)
+        """cambio de nombre para identificarlo"""
+        print("pasando")
+        Initial_path = str("C:\\Users\\carol\\Downloads")
+        now = datetime.now().strftime("%Y-%m-%d")
+        filename = max(
+                [Initial_path + "\\" + f for f in os.listdir(Initial_path)],
+                key=os.path.getctime,
+            )
+        print(filename)
+        namePath = f"report-glucose-libreview_{now}.pdf"
+        shutil.move(filename, os.path.join(Initial_path, namePath))
+        report = Change_route(namePath, patient, doctor)
+        return report
+    except Exception as e:
+                print(e)
+                print(str(e))
     
 
 
@@ -234,17 +243,19 @@ def AppRunActualizacion(dict):
     except:
         return False
 
-def AppRunInforme(dict, patient, doctor):
+def AppRunInforme(patient, doctor):
 
     try:
+        desktop.press_keys("down")
+        time.sleep(3)
         desktop.open_application(pathOpera)
         time.sleep(3)
         desktop.type_text(ruta_libreview)
         desktop.press_keys("enter")
         time.sleep(5)
-        desktop.type_text(dict["email"])
+        desktop.type_text(patient.libreview_email)
         desktop.press_keys("tab")
-        desktop.type_text(dict["password"])
+        desktop.type_text(patient.libreview_password)
         desktop.press_keys("tab")
         time.sleep(4)
         desktop.press_keys("enter")
@@ -254,12 +265,12 @@ def AppRunInforme(dict, patient, doctor):
         desktop.press_keys("tab")
         isValid("hospital\\images\\imprimir_pdf.png")
         time.sleep(3)
-        #Change_path()
+        isValid("hospital\\images\\close.png")
         newPatientReport= pdfToWord(patient, doctor)
         
-        isValid("hospital\\images\\close.png")
+        
+        
         time.sleep(1)
-        isValid("hospital\\images\\close_red.png")
         return newPatientReport
     except:
         return 0

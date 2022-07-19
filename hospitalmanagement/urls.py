@@ -29,6 +29,11 @@ urlpatterns = [
         views.delete_doctor_from_hospital_view,
         name="delete-doctor-from-hospital",
     ),
+    path(
+        "delete-report/<int:pk>",
+        views.delete_report_view,
+        name="delete-report",
+    ),
     path("update-doctor/<int:pk>", views.update_doctor_view, name="update-doctor"),
     path("admin-add-doctor", views.admin_add_doctor_view, name="admin-add-doctor"),
     path(
@@ -62,6 +67,21 @@ urlpatterns = [
         "informe-patient",
         views.informe_patient_view,
         name="informe-patient",
+    ),
+    path(
+        "patient-graficos",
+        views.graficos_view,
+        name="patient-graficos",
+    ),
+    path(
+        "patient-descargar-informe",
+        views.descargar_ultimo_reporte_view,
+        name="patient-descargar-informe",
+    ),
+    path(
+        "loading-page-informe",
+        views.informe_patient_final_view,
+        name="informe-final-patient",
     ),
     path(
         "actualizacion-patient",
