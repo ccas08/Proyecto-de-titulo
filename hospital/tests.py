@@ -28,7 +28,7 @@ win = Windows()
 desktop = Desktop()
 browser = Selenium()
 
-pathOpera= "C:\\Users\\carol\\AppData\\Local\\Programs\\Opera\\launcher.exe" #se puede cambiar al navegador más comodo
+pathOpera= "C:\Program Files\Google\Chrome\Application\chrome.exe" #se puede cambiar al navegador más comodo
 ruta_libreview = "https://www.libreview.com/"
 ruta_pdf_word = "https://www.investintech.com/es/productos/a2dpro/"
 
@@ -79,7 +79,9 @@ def PdfText (route, patient, doctor):
             contador_final+=1
         tiempoGenerado= lista[contador_final+1]
         if (tiempoGenerado.find("Informe")!= -1):
-            tiempoGenerado.replace("Informe","")
+            tiempoGenerado = tiempoGenerado.replace("Informe","")
+        elif (tiempoGenerado.find("informe")!= -1):
+            tiempoGenerado.replace("informe","")
 
         """Se crea el informe en base a la documentación sacada"""
 
@@ -94,7 +96,8 @@ def PdfText (route, patient, doctor):
                 print("aqui")
                 newPatientReport= models.PatientReport.objects.create(
                 patientId= patient.user_id,
-                patientName = patient.user.first_name,
+                assignedDoctorId= doctor.user.id,
+                patientName = patient.user.first_name+" "+patient.user.last_name,
                 email= patient.email,
                 Type= patient.Type,
                 Gmi=Gmi,
@@ -109,7 +112,8 @@ def PdfText (route, patient, doctor):
         else:
             newPatientReport= models.PatientReport.objects.create(
                 patientId= patient.user_id,
-                patientName = patient.user.first_name,
+                assignedDoctorId= doctor.user.id,
+                patientName = patient.user.first_name +" "+patient.user.last_name,
                 email= patient.email,
                 Type= patient.Type,
                 Gmi=Gmi,
@@ -142,13 +146,14 @@ def isValid(path):
                 print(str(e))
 
         
-def graficoGlucosaPromedio(lista_generado,lista_promedio_glucosa):
+def graficoGlucosaPromedio(lista_generado,lista_promedio_glucosa, doctor_id, patient_id, patient):
     fig2, ax2 = plt2.subplots()
     ax2.set_ylabel('Glucosa promedio')
     
-    ax2.set_title('Indicador del promedio glucosa')
+    ax2.set_title(patient)
     plt2.bar( lista_generado,lista_promedio_glucosa, color="red")
-    route2=f"barraGlucosaPromedio.png"
+    now= datetime.now().strftime("%Y-%m-%d")
+    route2=f"barraGlucosaPromedio{doctor_id}{patient_id}_{now}.png"
 
     if(os.path.exists("D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\" + route2)):
         os.remove("D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\" + route2)
@@ -158,7 +163,7 @@ def graficoGlucosaPromedio(lista_generado,lista_promedio_glucosa):
 
 def Change_route(namePath, patient, doctor):
     try:
-        time.sleep(4)
+        time.sleep(6)
         if(os.path.exists("D:/the_rial_proyecto/hospitalmanagement-master/hospital/libreview-pdf-word/" + namePath) ):
             return empty
         else:
@@ -185,7 +190,7 @@ def Change_route(namePath, patient, doctor):
 def pdfToWord(patient, doctor):
     try:
         
-        time.sleep(4)
+        time.sleep(6)
         """cambio de nombre para identificarlo"""
         print("pasando")
         Initial_path = str("C:\\Users\\carol\\Downloads")
@@ -214,13 +219,13 @@ veces a libreview, de lo contrario no funcionara ya que antes pedira datos de co
 
 
 def AppRunActualizacion(dict):
-    pathOpera= "C:\\Users\\carol\\AppData\\Local\\Programs\\Opera\\launcher.exe" #se puede cambiar al navegador más comodo
+     #se puede cambiar al navegador más comodo
     ruta_libreview = "https://www.libreview.com/meter/"
     
 
     try:
-        desktop.open_application(pathOpera)
-        time.sleep(3)
+        isValid("hospital\\images\\new_windows.png")
+        time.sleep(2)
         desktop.type_text(ruta_libreview)
         desktop.press_keys("enter")
         time.sleep(5)
@@ -246,10 +251,8 @@ def AppRunActualizacion(dict):
 def AppRunInforme(patient, doctor):
 
     try:
-        desktop.press_keys("down")
-        time.sleep(3)
-        desktop.open_application(pathOpera)
-        time.sleep(3)
+        isValid("hospital\\images\\new_windows.png")
+        time.sleep(2)
         desktop.type_text(ruta_libreview)
         desktop.press_keys("enter")
         time.sleep(5)
@@ -265,7 +268,7 @@ def AppRunInforme(patient, doctor):
         desktop.press_keys("tab")
         isValid("hospital\\images\\imprimir_pdf.png")
         time.sleep(3)
-        isValid("hospital\\images\\close.png")
+        isValid("hospital\\images\\click_here.png")
         newPatientReport= pdfToWord(patient, doctor)
         
         

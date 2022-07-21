@@ -1,0 +1,117 @@
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>SVDG || Carolina Castillo</title>
+
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+  <style>
+    .photo{
+     
+      width: 90px;
+      margin: auto;
+      display: block;
+      border-radius:30px;
+        
+    }
+    .letra{
+      text-align: center;
+      font-weight: lighter;
+      font-size: "4";
+    }
+  </style>
+
+
+    <div class="sidebar" data-color="purple" data-background-color="white" data-image="/static/assets/img/sidebar-1.jpg">
+      <div class="logo">
+        <a target="_blank" rel="noopener noreferrer" 
+           href="https://appseed.us/admin-dashboards/django-dashboard-material" class="simple-text logo-normal">
+          Sistema Paciente
+        </a>
+      </div>
+      <div class="sidebar-wrapper">
+        <ul class="nav">
+        {% if request.user.is_authenticated %}
+
+          <div class="smartphone-menu-trigger"></div>
+          <header class="avatar">
+            <img src="{% static patient.profile_pic.url %}" alt="Profile Pic"/ class= photo>
+              <br>
+            <h5 class = "letra"> Paciente</h5>
+            <h4 style= "text-align: center"class="simple-text logo-normal">{{request.user.first_name}}{{ " "}}{{request.user.last_name}}</h4>
+          </header>
+          <br>
+          <li class="nav-item ">
+            <a class="nav-link" href="/patient-dashboard">
+              <i class="material-icons">dashboard</i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/patient-graficos">
+              <i class="fa fa-bar-chart"></i>
+              <p>Gráficos</p>
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/patient-view-doctor">
+              <i class="fa fa-user-md"></i>
+              <p>Doctores
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item ">
+            <a class="nav-link" href="/informe-patient">
+              <i class="fa fa-file"></i>
+              <p>Ingresar informe
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item ">
+            <a class="nav-link" href="/patient-view-report">
+              <i class="fa fa-list"></i>
+              <p>Reportes
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item ">
+            <a class="nav-link" href="/actualizacion-patient">
+              <i class="fa fa-refresh"></i>
+              <p>Actualizar máquina
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item ">
+            <a class="nav-link" href="/patient-descargar-informe">
+              <i class="fa fa-download"></i>
+              <p>Descargar último informe
+              </p>
+            </a>
+          </li>
+
+
+          <li class="nav-item ">
+            <a class="nav-link" href="{% url 'logout' %}" >
+              <i class="material-icons">directions_run</i>
+              <p>Logout</p>
+            </a>
+          </li>
+      
+
+        {% endif %}
+        </ul>
+      </div>
+
+    </div>

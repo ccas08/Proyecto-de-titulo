@@ -1,0 +1,90 @@
+{% extends 'pacientes/base.html' %}
+
+{%load static%}
+{% block content %}
+
+<style>
+.cont{
+  margin-left:300px;
+}
+</style>
+
+<div class="cont">
+  <div class="row">
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-header card-header-primary">
+          <h4 class="card-title">
+            Obtención datos
+          </h4>
+        </div>
+        <div class="card-body">
+
+          <h6 class="card-category">
+              
+            Ingresa tus datos
+              
+          </h6>
+          
+          <br />
+
+          <form role="form" method="post" action="">
+              
+            {% csrf_token %} 
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="bmd-label-floating">Correo electrónico</label>
+                  <input type="string" name="libreview_email" placeholder="email@email.com" value="">
+                </div>
+              </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="bmd-label-floating">Contraseña</label>
+                  <input type="Password" name="libreview_password" placeholder="*******" value="">
+                </div>
+              </div>
+            </div>
+
+            <br />
+
+            <button type="submit" name="submit" class="btn btn-primary pull-left">Descargar</button>
+
+            <div class="clearfix"></div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+  <div style="text-align: center">
+  <div id="loading" style="display: none">
+    <div id= "spinner" class="spinner-border" role="status" >
+      
+        <span class="sr-only">Loading...</span>
+      
+    </div>
+  </div>
+</div>
+  <script>
+    function boton(){
+      const boton = document.getElementById('loading')
+      
+      boton.style.display= "inline"
+      boton.innerHTML = boton.innerHTML + "<p>" + "Cargando datos, esto podria tomar unos minutos" + "</p>"
+      //;
+    }
+    
+  </script>
+</div>
+
+{% endblock content %}

@@ -33,7 +33,6 @@
           <th>Foto de perfil</th>
           <th>Correo electrónico</th>
           <th>Aprobar</th>
-          <th>Rechazar</th>
         </tr>
       </thead>
       {% for d in doctors %}
@@ -42,7 +41,7 @@
         <td> <img src="{% static d.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td>
         <td>{{d.email}}</td>
         <td><a class="btn btn-primary btn-xs" href="{% url 'approve-doctor' d.id  %}"><span class="glyphicon glyphicon-ok"></span></a></td>
-        <td><a class="btn btn-danger btn-xs" href="{% url 'reject-doctor' d.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
+        
       </tr>
       {% endfor %}
     </table>

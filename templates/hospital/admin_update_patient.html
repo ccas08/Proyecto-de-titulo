@@ -60,15 +60,19 @@
           <div class="col-md-6">
             <div class="form-group">
               {% render_field userForm.first_name class="form-control" placeholder="Nombre" %}
+              {% render_field userForm.first_name.errors %}
             </div>
             <div class="form-group">
               {% render_field userForm.username class="form-control" placeholder="Rut" %}
+              {% render_field userForm.username.errors %}
             </div>
             <div class="form-group">
               {% render_field patientForm.email class="form-control" placeholder="Correo electrónico" %}
+              {% render_field patientForm.email.errors %}
             </div>
             <div class="form-group">
-              {% render_field patientForm.symptoms class="form-control" placeholder="Tipo de diabetes" %}
+              {% render_field patientForm.Type class="form-control" placeholder="Tipo de diabetes" %}
+              {% render_field patientForm.Type.errors %}
             </div>
             <div class="form-group">
               {% render_field patientForm.profile_pic class="form-control" placeholder="Foto de perfil" %}
@@ -77,9 +81,11 @@
           <div class="col-md-6">
             <div class="form-group">
               {% render_field userForm.last_name class="form-control" placeholder="Apellido" %}
+              {% render_field userForm.last_name.errors %}
             </div>
             <div class="form-group">
               {% render_field userForm.password class="form-control" placeholder="Contraseña" %}
+              {% render_field userForm.password.errors %}
             </div>
             <div class="form-group">
               {% render_field patientForm.assignedDoctorId class="form-control" placeholder="Doctor" %}

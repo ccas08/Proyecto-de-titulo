@@ -9,11 +9,19 @@ from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
+from django.contrib.auth import authenticate
 from hospital.tests import  AppRunInforme, AppRunActualizacion, graficoGlucosaPromedio
-
+from django.core.exceptions import ValidationError
 import matplotlib.pyplot as plt
 
 from datetime import datetime
+
+
+def validarLetras(value):
+    for i in value:
+        if not i.isalpha():
+            print("aqui")
+            raise ValidationError("Este campo solo acepta letras") 
 
 # Create your views here.
 def home_view(request):
@@ -62,6 +70,7 @@ def doctor_signup_view(request):
     userForm = forms.DoctorUserForm()
     doctorForm = forms.DoctorForm()
     mydict = {"userForm": userForm, "doctorForm": doctorForm}
+    
     if request.method == "POST":
         userForm = forms.DoctorUserForm(request.POST)
         doctorForm = forms.DoctorForm(request.POST, request.FILES)
@@ -74,14 +83,20 @@ def doctor_signup_view(request):
             doctor = doctor.save()
             my_doctor_group = Group.objects.get_or_create(name="DOCTOR")
             my_doctor_group[0].user_set.add(user)
-        return HttpResponseRedirect("doctorlogin")
+            return HttpResponseRedirect("doctorlogin")
+        else:
+            userForm = forms.DoctorUserForm(request.POST)
+            doctorForm = forms.DoctorForm(request.POST, request.FILES)
+            mydict = {"userForm": userForm, "doctorForm": doctorForm}
+
     return render(request, "hospital/doctorsignup.html", context=mydict)
 
 
 def patient_signup_view(request):
     userForm = forms.PatientUserForm()
     patientForm = forms.PatientForm()
-    mydict = {"userForm": userForm, "patientForm": patientForm}
+    list_diabetes=["Diabetes tipo 1","Diabetes tipo 2", "Diabetes gestacional"]
+    mydict = {"userForm": userForm, "patientForm": patientForm , "diabetes": list_diabetes}
     if request.method == "POST":
         userForm = forms.PatientUserForm(request.POST)
         patientForm = forms.PatientForm(request.POST, request.FILES)
@@ -95,7 +110,12 @@ def patient_signup_view(request):
             patient = patient.save()
             my_patient_group = Group.objects.get_or_create(name="PATIENT")
             my_patient_group[0].user_set.add(user)
-        return HttpResponseRedirect("patientlogin")
+            return HttpResponseRedirect("patientlogin")
+        else:
+            userForm = forms.PatientUserForm(request.POST)
+            patientForm = forms.PatientForm(request.POST, request.FILES)
+            mydict = {"userForm": userForm, "patientForm": patientForm, "diabetes": list_diabetes}
+
     return render(request, "hospital/patientsignup.html", context=mydict)
 
 
@@ -184,6 +204,15 @@ def delete_doctor_from_hospital_view(request, pk):
     doctor.delete()
     return redirect("admin-view-doctor")
 
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
+def inactivar_doctor_from_hospital_view(request, pk):
+    doctor = models.Doctor.objects.get(id=pk)
+    doctor.status=False
+    doctor.save()
+    return redirect("admin-view-doctor")
+
+
 @login_required(login_url="patientlogin")
 @user_passes_test(is_patient)
 def delete_report_view(request, pk):
@@ -201,9 +230,10 @@ def descargar_ultimo_reporte_view(request):
     now= datetime.now().strftime("%Y-%m-%d")
     route=f"report-glucose-libreview_{now}.pdf"
     antigua_ruta= "D:\\the_rial_proyecto\\hospitalmanagement-master\\hospital\libreview-pdf-word\\"+ route
-    if(os.path.exists(antigua_ruta)== False ):
-        return render(request, "hospital\patient_informe_descargar.html", context= my_dict)
     nueva_ruta= "D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\pdfs\\" + route
+    
+    if(os.path.exists(antigua_ruta)== False ):
+        return render(request, "pacientes\patient_informe_descargar.html", context= my_dict)
     if(os.path.exists("D:/the_rial_proyecto/hospitalmanagement-master/static/pdfs/" + route) ):
         os.remove("D:/the_rial_proyecto/hospitalmanagement-master/static/pdfs/" + route)
         shutil.copy(antigua_ruta, nueva_ruta)
@@ -217,7 +247,7 @@ def descargar_ultimo_reporte_view(request):
             boolean= True
             my_dict= {"patient": patient, "boolean":boolean, "route": "/pdfs/"+route}
             
-    return render(request, "hospital\patient_informe_descargar.html", context= my_dict)
+    return render(request, "pacientes\patient_informe_descargar.html", context= my_dict)
     
 
 
@@ -228,8 +258,14 @@ def graficos_view(request):
     patient = models.Patient.objects.get(
         user_id=request.user.id
     ) 
+    doctor= models.Doctor.objects.get(
+        user_id=patient.assignedDoctorId
+    ) 
+    
+    
     patientReport = models.PatientReport.objects.all().order_by("reportGenerado").reverse()
     lista_gmi=[]
+    nombre= patient.user.first_name + " " + patient.user.last_name
     lista_promedio_glucosa=[]
     lista_generado=[]
     boolean=False
@@ -242,13 +278,14 @@ def graficos_view(request):
             boolean=True
     if(boolean):
         fig, ax = plt.subplots()
-        route2=f"barraGlucosaPromedio.png"
+        now= datetime.now().strftime("%Y-%m-%d")
+        route2=f"barraGlucosaPromedio{doctor.user.id}{patient.user_id}_{now}.png"
 
         plt.bar( lista_generado,lista_gmi, color="orange")
         ax.set_ylabel('Gmi')
-        ax.set_title('Indicador gestión de glucosa')
+        ax.set_title(nombre)
 
-        route=f"barraGmi.png"
+        route=f"barraGmi{doctor.user.id}{patient.user_id}_{now}.png"
         if(os.path.exists("D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\" + route)):
             print("pasando")
             os.remove("D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\"+ route)
@@ -256,14 +293,14 @@ def graficos_view(request):
         else:
             plt.savefig('D:\\the_rial_proyecto\\hospitalmanagement-master\\static\\images\\'+ route)
 
-        graficoGlucosaPromedio(lista_generado,lista_promedio_glucosa)
+        graficoGlucosaPromedio(lista_generado,lista_promedio_glucosa, doctor.user.id,patient.user_id, nombre)
 
         route_gmi = "/images/" + route
         route_glucosaPromedio = "/images/"+ route2
         mydict={"gmi":route_gmi, "glucosaPromedio":route_glucosaPromedio,"bool":boolean, "patient":patient}
 
-        return render(request, "hospital/patient_graficos_view.html", context=mydict)
-    return render(request, "hospital/patient_graficos_view.html", context=mydict)
+        return render(request, "pacientes/patient_graficos_view.html", context=mydict)
+    return render(request, "pacientes/patient_graficos_view.html", context=mydict)
 
 
 
@@ -472,12 +509,14 @@ def informe_patient_view(request):
         if(p!= empty):
             mydict2 = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type, "p": p}  
             mydict.update(mydict2)
-            return render(request, "hospital/patient_dashboard.html", context= mydict)
+            return render(request, "pacientes/dashboard.html", context= mydict)
         else:
+            patientReport= models.PatientReport.objects.all().order_by("reportGenerado").reverse()
+            mydict = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type, "reports": patientReport }
             return render(request, "hospital/patient_view_report.html", context= mydict)
         
         
-    return render(request, "hospital/patient_datos_libreview_informe.html", context= mydict)
+    return render(request, "pacientes/patient_datos_libreview_informe.html", context= mydict)
 
 def informe_patient_final_view(request):
     
@@ -487,6 +526,7 @@ def informe_patient_final_view(request):
     doctor = models.Doctor.objects.get(user_id=patient.assignedDoctorId)
     mydict = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type}
     
+    return mydict
 
     
     
@@ -516,10 +556,33 @@ def actualizacion_patient_view(request):
         pT.libreview_email = request.POST["libreview_email"]
         pT.libreview_password = request.POST["libreview_password"]
         AppRunActualizacion(mydict)
-        return render(request, "hospital/patient_datos_libreview_actualizacion.html", context= mydict)
+        return render(request, "pacientes/patient_datos_libreview_actualizacion.html", context= mydict)
         
-    return render(request, "hospital/patient_datos_libreview_actualizacion.html", context=mydict)
+    return render(request, "pacientes/patient_datos_libreview_actualizacion.html", context=mydict)
 
+
+def Top3 (id):
+    lista2= list()
+    lista=list()
+    lista3 = list()
+    now= datetime.now().strftime("%Y-%m-%d")
+    reports= models.PatientReport.objects.all().filter(assignedDoctorId = id).reverse()
+    cont=0
+    for i in reports:
+        if(cont==2):
+            break
+
+        suma= "/images/barraGlucosaPromedio"+ str(i.assignedDoctorId) + str(i.patientId) +"_"+ now +".png"
+        lista2.append(suma)
+        suma= "/images/barraGmi"+ str(i.assignedDoctorId) + str(i.patientId) +"_"+ now +".png"
+        lista3.append(suma)
+        lista.append(i.patientId)
+        cont+=1
+
+    myDict = {"lista_suma_glucosa": lista2,
+              "lista_pacientes": lista,
+              "lista_suma_gmi": lista3}
+    return myDict
 
 
 
@@ -530,20 +593,61 @@ def actualizacion_patient_view(request):
 @user_passes_test(is_doctor)
 def doctor_dashboard_view(request):
     # for three cards
+    reportcount=0
     patientcount = (
         models.Patient.objects.all()
         .filter(status=True, assignedDoctorId=request.user.id)
         .count()
     )
+    patient=(
+        models.Patient.objects.all()
+        .filter(status=True, assignedDoctorId=request.user.id)
+    )
+    for p in patient:
+        report= models.PatientReport.objects.all().filter(patientId = p.user.id)
+        for r in report:
+            if(p.user.id == r.patientId):
+                reportcount+= 1
+                
     # for  table in doctor dashboard
+    patientdiabetes1count = (
+        models.Patient.objects.all()
+        .filter(status=True, Type="Diabetes tipo 1")
+        .count()
+    )
     
+    patientdiabetes2count = (
+        models.Patient.objects.all()
+        .filter(status=True, Type="Diabetes tipo 2")
+        .count()
+    )
+    patientdiabetescount=  patientdiabetes1count + patientdiabetes2count 
+    patientgestacionalcount = (
+        models.Patient.objects.all()
+        .filter(status=True, Type = "Diabetes gestacional")
+        .count()
+    )
+    top3= Top3(request.user.id)
+    lista_nombres= list()
+    for a in top3["lista_pacientes"]:
+        for k in models.Patient.objects.all():
+            if k.user.id == a :
+                lista_nombres.append(k.user.first_name + " " + k.user.last_name)
+    report_doctor= models.PatientReport.objects.all().filter(assignedDoctorId=request.user.id)
     mydict = {
         "patientcount": patientcount,
+        "reportcount": reportcount,
+        "report_doctor":report_doctor,
+        "patientdiabetescount":patientdiabetescount,
+        "top3": top3["lista_suma_glucosa"],
+        "gmi": top3["lista_suma_gmi"],
+        "lista_nombres": lista_nombres,
+        "patientgestacionalcount":patientgestacionalcount,
         "doctor": models.Doctor.objects.get(
             user_id=request.user.id
         ),  # for profile picture of doctor in sidebar
     }
-    return render(request, "hospital/doctor_dashboard.html", context=mydict)
+    return render(request, "doctor/dashboard.html", context=mydict)
 
 
 @login_required(login_url="doctorlogin")
@@ -554,7 +658,23 @@ def doctor_patient_view(request):
             user_id=request.user.id
         ),  # for profile picture of doctor in sidebar
     }
-    return render(request, "hospital/doctor_patient.html", context=mydict)
+    return render(request, "doctor/pacientes.html", context=mydict)
+
+@login_required(login_url="doctorlogin")
+@user_passes_test(is_doctor)
+def informe_doctor_paciente(request):
+    report=models.PatientReport.objects.all().filter(assignedDoctorId = request.user.id)
+    patientReport = report.order_by("reportGenerado").reverse()
+    doctor = models.Doctor.objects.get(
+        user_id=request.user.id
+    )  
+      # for profile picture of patient in sidebar
+    return render(
+                request,
+                "doctor/reportePacientes.html",
+                {"reports": patientReport, "doctor": doctor},
+                )
+   
 
 
 @login_required(login_url="doctorlogin")
@@ -568,7 +688,7 @@ def doctor_view_patient_view(request):
     )  # for profile picture of doctor in sidebar
     return render(
         request,
-        "hospital/doctor_view_patient.html",
+        "doctor/datosPacientes.html",
         {"patients": patients, "doctor": doctor},
     )
 
@@ -605,8 +725,6 @@ def search_view(request):
 @login_required(login_url="patientlogin")
 @user_passes_test(is_patient)
 def patient_dashboard_view(request):
-
-    
     patient = models.Patient.objects.get(user_id=request.user.id)
     doctor = models.Doctor.objects.get(user_id=patient.assignedDoctorId)
     patientReport = models.PatientReport.objects.all().order_by("reportGenerado").reverse()
@@ -618,9 +736,9 @@ def patient_dashboard_view(request):
         now = datetime.now().strftime("%d/%m/%Y")
         for p in patientReport:
             mydict = {"patient": patient, "doctorName": doctor.get_name, "Type": patient.Type, "p": p}      
-            return render(request, "hospital/patient_dashboard.html", context=mydict)
+            return render(request, "pacientes/dashboard.html", context=mydict)
 
-    return render(request, "hospital/patient_dashboard.html", context=mydict)
+    return render(request, "pacientes/dashboard.html", context=mydict)
 
 
 def patient_view_doctor_view(request):
@@ -630,7 +748,7 @@ def patient_view_doctor_view(request):
     )  # for profile picture of patient in sidebar
     return render(
         request,
-        "hospital/patient_view_doctor.html",
+        "pacientes/patient_view_doctor.html",
         {"patient": patient, "doctors": doctors},
     )
 def patient_view_reports_view(request):
@@ -644,13 +762,13 @@ def patient_view_reports_view(request):
             valor = True
             return render(
                 request,
-                "hospital/patient_view_report.html",
+                "pacientes/patient_view_report.html",
                 {"patient": patient, "reports": patientReport},
                 )
     if(valor != True):
         return render(
             request,
-            "hospital/patient_view_report.html",
+            "pacientes/patient_view_report.html",
             {"patient": patient},
             )           
 

@@ -1,0 +1,80 @@
+
+{% extends "doctor/base.html" %}
+{%load static%}
+
+{% block content %}
+
+<head>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+    }
+
+    .row {
+      margin: 100px;
+    }
+    
+  </style>
+</head>
+
+
+<div class="container">
+
+  {% if reports %}
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h6 class="panel-title"> Reportes</h6>
+    </div>
+    <table class="table table-hover" id="dev-table">
+        <thead>
+          <tr>
+  
+            <th style = "background-color: #BDEF82">Nombre del paciente</th>
+            <th style = "background-color: #BDEF82">Indicador de Gestión de glucosa (GMI)</th>
+            <th style = "background-color: #BDEF82">Glucosa promedio</th>
+            <th style = "background-color: #BDEF82">Fecha del informe </th>
+           
+          </tr>
+        </thead>
+        
+        {% for r in reports %}
+            <tr>
+            <td> {{r.patientName}}</td>
+            <td>{{r.Gmi}}</td>
+            <td>{{r.GlucosaPromedio}}</td>
+            <td>{{r.reportGenerado}}</td>
+            </tr>
+          
+        {% endfor %}
+      </table>
+      
+  </div>
+  {%else%}
+  <br><br><br>
+  <h4 style="text-align: center;color: red;">No se encontraron informes!!!</h4>
+  {% endif %}
+
+
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function() {
+      // Javascript method's body can be found in assets/js/demos.js
+      md.initDashboardPageCharts();
+
+    });
+  </script>
+
+{% endblock javascripts %}

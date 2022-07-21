@@ -15,7 +15,7 @@ urlpatterns = [
     path("doctorsignup", views.doctor_signup_view, name="doctorsignup"),
     path("patientsignup", views.patient_signup_view),
     path("adminlogin", LoginView.as_view(template_name="hospital/adminlogin.html")),
-    path("doctorlogin", LoginView.as_view(template_name="hospital/doctorlogin.html")),
+    path("doctorlogin", LoginView.as_view(template_name="hospital/doctorlogin.html"), name="doctorlogin"),
     path("patientlogin", LoginView.as_view(template_name="hospital/patientlogin.html")),
     path("afterlogin", views.afterlogin_view, name="afterlogin"),
     path(
@@ -30,10 +30,16 @@ urlpatterns = [
         name="delete-doctor-from-hospital",
     ),
     path(
+        "inactivar-doctor-from-hospital/<int:pk>",
+        views.inactivar_doctor_from_hospital_view,
+        name="inactivar-doctor-from-hospital",
+    ),
+    path(
         "delete-report/<int:pk>",
         views.delete_report_view,
         name="delete-report",
     ),
+    
     path("update-doctor/<int:pk>", views.update_doctor_view, name="update-doctor"),
     path("admin-add-doctor", views.admin_add_doctor_view, name="admin-add-doctor"),
     path(
@@ -82,6 +88,11 @@ urlpatterns = [
         "loading-page-informe",
         views.informe_patient_final_view,
         name="informe-final-patient",
+    ),
+    path(
+        "informe-doctor-paciente",
+        views.informe_doctor_paciente,
+        name="informe-doctor-paciente",
     ),
     path(
         "actualizacion-patient",

@@ -1,0 +1,140 @@
+{% extends "hospital/base-fullscreen.html" %}
+
+{% block title %} Sign UP {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+{% include "hospital/navbar.html" %}
+    <main>
+      <br><br><br><br><br><br>
+        <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+            <div class="container">
+                <p class="text-center">
+                    
+                </p>
+                <div class="row justify-content-center form-bg-image" data-background-lg="/static/assets/img/illustrations/signin.svg">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <h1 class="mb-0 h3">
+                                    Registro Doctor
+                                </h1>
+                                <br />
+                                <p>
+                                    {% if msg %}
+                                        {{ msg | safe }}
+                                    {% else %}
+                                        Registra tus datos
+                                    {% endif %}                                     
+                                </p> 
+                            </div>
+                            <form method="post" action="" class="mt-4">
+                                
+                                {% csrf_token %}
+
+                                <div class="form-group mb-4">
+                                  <label for="email">Nombre</label>
+                                  <div class="input-group">
+                                      <span class="input-group-text" id="basic-addon1">
+                                          <span class="fas fa-edit"></span>
+                                      </span>
+                                      {{ userForm.first_name }}
+                                  </div>  
+                                  <span class="text-error">{{ form.email.errors }}</span>
+                              </div>
+                              <!-- End of Form -->
+                              <div class="form-group">
+
+                                <div class="form-group mb-4">
+                                  <label for="email">Apellido</label>
+                                  <div class="input-group">
+                                      <span class="input-group-text" id="basic-addon1">
+                                          <span class="fas fa-pencil-alt"></span>
+                                      </span>
+                                      {{ userForm.last_name }}
+                                  </div>  
+                                  <span class="text-error">{{ form.email.errors }}</span>
+                              </div>
+                              
+                              <!-- End of Form -->
+                              <div class="form-group">
+
+                                <div class="form-group mb-4">
+                                    <label for="email">Rut</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            <span class="fas fa-user-circle"></span>
+                                        </span>
+                                        {{  userForm.username }}
+                                    </div>  
+                                    <span class="text-error">{{ form.username.errors }}</span>
+                                </div>
+
+                                <!-- Form -->
+                                <div class="form-group mb-4">
+                                    <label for="email">Correo Electrónico</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            <span class="fas fa-envelope"></span>
+                                        </span>
+                                        {{ doctorForm.email }}
+                                    </div>  
+                                    <span class="text-error">{{ doctorForm.email.errors }}</span>
+                                </div>
+                                <!-- End of Form -->
+                                <div class="form-group">
+                                    
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        <label for="password">Contraseña</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{  userForm.password }}
+                                        </div>  
+                                        <span class="text-error">{{ form.password.errors }}</span>
+                                    </div>
+
+                                    <div class="form-group mb-4">
+                                      <label for="profile_pic">Foto de perfil</label>
+                                      <div class="input-group" >
+                                          <span class="input-group-text" id="basic-addon2" >
+                                              <span class="fas fa-file-image"></span>
+                                          </span>
+                                          {{  doctorForm.profile_pic }} 
+                                      </div>  
+                                      <span class="text-error">{{ form.profile_pic.errors }}</span>
+                                  </div>
+                                  
+                                    <!-- End of Form -->
+                                    
+                                <div class="d-grid">
+                                    <button type="submit" name="register" >Registrar</button>
+                                </div>
+                            </form>
+                            <br />
+                            
+                            <div class="d-flex justify-content-center align-items-center mt-4">
+                                <span class="fw-normal">
+                                    Ya tienes una cuenta? 
+                                    <a href="{% url 'doctorlogin' %}" class="fw-bold">Iniciar sesión</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
+
+
+{% endblock content %}

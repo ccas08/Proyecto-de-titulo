@@ -60,20 +60,25 @@
           <div class="col-md-6">
             <div class="form-group">
               {% render_field userForm.first_name class="form-control" placeholder="Nombre" %}
+              {% render_field userForm.first_name.errors %}
             </div>
             <div class="form-group">
               {% render_field userForm.username class="form-control" placeholder="Rut" %}
+              {% render_field userForm.username.errors %}
             </div>
             <div class="form-group">
               {% render_field doctorForm.email class="form-control" placeholder="Correo electrónico" %}
+              {% render_field doctorForm.email.errors %}
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               {% render_field userForm.last_name class="form-control" placeholder="Apellido" %}
+              {% render_field userForm.last_name.errors %}
             </div>
             <div class="form-group">
               {% render_field userForm.password class="form-control" placeholder="Contraseña" %}
+              {% render_field userForm.password.errors %}
             </div>
             <div class="form-group">
               {% render_field doctorForm.profile_pic class="form-control" placeholder="Profile Picture" %}

@@ -41,6 +41,7 @@
            
           </tr>
         </thead>
+        
         {% for r in reports %}
           {% if patient.user_id == r.patientId %}
             {% if r.Gmi > 7.0 %}

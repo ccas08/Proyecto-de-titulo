@@ -1,0 +1,82 @@
+
+{% extends "doctor/base.html" %}
+{%load static%}
+
+{% block content %}
+
+<head>
+  
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <style media="screen">
+    
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+    }
+
+    .row {
+      margin: 100px;
+    }
+   
+    
+  </style>
+</head>
+
+
+
+<div class="container">
+
+
+  {% if patients %}
+  <div class="panel panel-primary">
+    <div class="card-body table-responsive">
+      <h6 class="panel-title">Lista de pacientes</h6>
+    </div>
+    <table class="table table-hover" id="dev-table">
+      <thead >
+        <tr >
+          <th style = "font-size:15px;background-color: #82CAEF "><b>Nombre</b></th>
+          <th style = "font-size:15px;background-color: #82CAEF "><b>Profile Picture</b></th>
+          <th style = "font-size:15px;background-color: #82CAEF "><b>Tipo de diabetes</b></th>
+          <th style = "font-size:15px;background-color: #82CAEF "><b>Correo electrónico</b></th>
+
+
+        </tr>
+      </thead>
+      {% for p in patients %}
+      <tr>
+        <td style = "font-size:20px"> {{p.get_name}}</td>
+        <td style = "font-size:20px"> <img src="{% static p.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td>
+        <td>{{p.Type}}</td>
+        <td>{{p.email}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {%else%}
+  <br><br><br>
+  <h4 style="text-align: center;color: red;">No se encontro pacientes !!!</h4>
+  {% endif %}
+
+
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function() {
+      // Javascript method's body can be found in assets/js/demos.js
+      md.initDashboardPageCharts();
+
+    });
+  </script>
+
+{% endblock javascripts %}

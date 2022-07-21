@@ -1,0 +1,73 @@
+{% extends 'pacientes/base.html' %}
+{% block content %}
+{%load static%}
+
+<head>
+  
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+    }
+
+    .row {
+      margin: 100px;
+    }
+  </style>
+</head>
+
+
+<div class="container">
+
+  {% if reports %}
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h6 class="panel-title"> Reportes</h6>
+    </div>
+    <table class="table table-hover" id="dev-table">
+        <thead>
+          <tr>
+  
+            <th style="background-color: #F1E878">Nombre del paciente</th>
+            <th style="background-color: #F1E878">Indicador de Gestión de glucosa (GMI)</th>
+            <th style="background-color: #F1E878">Glucosa promedio</th>
+            <th style="background-color: #F1E878">Fecha del informe </th>
+           
+          </tr>
+        </thead>
+        
+        {% for r in reports %}
+          {% if patient.user_id == r.patientId %}
+            {% if r.Gmi > 7.0 %}
+            
+              <p> Uno de tus GMI esta muy alto, deberia estar en 7.0 o más bajo! </p>
+              <br>
+            {% endif %}
+            <tr>
+            <td> {{patient.user.first_name}}{{" "}}{{patient.user.last_name}}</td>
+            <td>{{r.Gmi}}</td>
+            <td>{{r.GlucosaPromedio}}</td>
+            <td>{{r.reportGenerado}}</td>
+            
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </table>
+      
+  </div>
+  {%else%}
+  <br><br><br>
+  <h4 style="text-align: center;color: red;">No se encontraron informes!!!</h4>
+  {% endif %}
+
+
+</div>
+
+
+{% endblock content %}

@@ -19,6 +19,9 @@
     .row {
       margin: 100px;
     }
+    .btn btn-danger btn-xs{
+
+    }
   </style>
 </head>
 
@@ -36,7 +39,7 @@
           <th>Rut</th>
           <th>Correo Electrónico</th>
           <th>Modificar</th>
-          <th>Borrar</th>
+          <th>Inactivar</th>
         </tr>
       </thead>
       {% for d in doctors %}
@@ -47,8 +50,8 @@
         <td>{{d.user.username}}</td>
         <td>{{d.email}}</td>
         <td><a class="btn btn-primary btn-xs" href="{% url 'update-doctor' d.id  %}"><span class="glyphicon glyphicon-edit"></span></a></td>
-        <td><a class="btn btn-danger btn-xs" href="{% url 'delete-doctor-from-hospital' d.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
-      </tr>
+        <td><a class="btn btn-danger btn-xs" href="{% url 'inactivar-doctor-from-hospital' d.id  %}"><span class="glyphicon glyphicon-minus-sign"></span></a></td>
+      </tr> 
       {% endfor %}
     </table>
   </div>

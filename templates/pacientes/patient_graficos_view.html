@@ -1,0 +1,99 @@
+{% extends 'pacientes/base.html' %}
+{% block content %}
+{%load static%}
+
+<head>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+
+    }
+
+    h4{
+      text-align: center;
+      background-color: #C4EAE0 ;
+    }
+
+  </style>
+</head>
+
+<style>
+.gmi{
+  display: block;
+  margin: 0px auto;
+}
+.glucosaPromedio{
+  display: block;
+  margin: 0px auto;
+}
+
+.cont{
+margin-left: 350px;
+
+}
+</style>
+{%if bool == True %}
+<h6>Indicador del promedio glucosa</h6>
+
+<div class="cont">
+    <div class="row">
+      
+      <div class="col-md-6">
+        <div class="card card-chart">
+          
+          <div class="card-body">
+            <h4 class="card-title"></h4>
+            <p class="card-category">
+              <span class="text-success"><i class=""></i> </span> </p>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons"></i> 
+              <div class="card-header-success">
+                <img class="ct-chart" src="{% static glucosaPromedio %}" style= "width : 400px">
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div> 
+    </div>
+</div>
+<br> 
+<h6>Indicador de gestión de glucosa </h6>
+<div class="cont">
+<div class="row">
+  <div class="col-md-6">
+    <div class="card card-chart">
+
+      <div class="card-body">
+        <h4 class="card-title"></h4>
+        <p class="card-category"></p>
+      </div>
+      <div class="card-footer">
+        <div class="stats">
+          <i class="material-icons"></i> 
+          <div class="card-header card-header-warning">
+            <img class="ct-chart" src="{% static gmi %}" style= "width : 400px">
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+{%else%}
+  <p>No hay datos aún para los graficos<p>
+
+{%endif%}
+{% endblock content %}
+
